@@ -2,6 +2,6 @@
 Service and Ultimate level force analysis of concrete cross sections
 
 ToDo:
-- [ ] Repository Licensing
-- [ ] Programming Codes to Support
+- [x] Repository Licensing - ** 3-Clause BSD **
+- [x] Programming Languages to Support - ** Python and VBA **
 - [ ] National Building Codes to Support

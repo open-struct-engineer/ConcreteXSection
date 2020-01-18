@@ -161,51 +161,38 @@ def strain_at_depth(eu,neutral_axis_depth,depth_of_interest):
 
     return e
 
-def plastic_center(bars_x=[1], bars_y=[1], fy=60000, As=[0.31], fc=3000, eu=0.003, k=0.85, conc_area=1, conc_centroid=[0,0]):
+def plastic_center(bars_x=[1], bars_y=[1], fy=60000, As=[0.31], fc=3000, conc_area=1, conc_centroid=[0,0]):
     '''
-    given the ulitmate strain, f'c (28-day) strength and k for concrete
+    given the ulitmate strain, f'c (28-day) strength
     return a the plastic centroid for the three stress-strain equations
     of the concrete
 
-    accounting for the bar area subtracting from the concrete area by (fy/fc@eu - 1)
+    accounting for the bar area subtracting from the concrete area by (fy/fc - 1)
     similar approach to transformed sections using n = Es/Ec
     '''
 
-    fc_collins = stress_strain_collins_et_all(fc,eu,eu)
-    fc_desayi = stress_strain_desayi_krishnan(fc,eu,k,eu)
-    fc_whitney = stress_strain_whitney(fc,eu,eu)
+    fc = fc_input
 
-    fc = [fc_collins, fc_desayi, fc_whitney[0]]
+    cc = fc*conc_area
+    cc_mx = cc*conc_centroid[1]
+    cc_my = cc*conc_centroid[0]
 
-    cc = [i*conc_area for i in fc]
-    cc_mx = [i*conc_centroid[1] for i in cc]
-    cc_my = [i*conc_centroid[0] for i in cc]
+    cb = [i * (fy-fc) for i in As]
 
-    C = []
-    C_mx = []
-    C_my = []
-    cb = []
-    cb_mx = []
-    cb_my = []
-    pc = []
+    C = cc + sum(cb)
 
-    count = 0
-    for c in fc:
-        cb.append([i * (fy/c  - 1) for i in As])
+    cb_mx = [(cb[i] * bars_y[i]) for i in range(len(bars_x))]
+    cb_my = [(cb[i] * bars_x[i]) for i in range(len(bars_x))]
 
-        C.append(cc[count] + sum(cb[-1]))
+    C_mx = cc_mx+sum(cb_mx)
+    C_my = cc_my+sum(cb_my)
 
-        cb_mx.append([(cb[-1][i] * bars_y[i]) for i in range(len(bars_x))])
-        cb_my.append([(cb[-1][i] * bars_x[i]) for i in range(len(bars_x))])
+    yp = C_mx/C
+    xp = C_my/C
 
-        C_mx.append(cc_mx[count]+sum(cb_mx[-1]))
-        C_my.append(cc_my[count]+sum(cb_my[-1]))
+    pc = [xp,yp]
 
-        yp = C_mx[-1]/C[-1]
-        xp = C_my[-1]/C[-1]
-
-        pc.append([xp,yp])
-
-        count +=1
-
+    print cb_mx
+    print cb_my
+    print pc
     return pc,[fc,cc,cc_mx,cc_my,cb,cb_mx,cb_my,C,C_mx,C_my]

@@ -87,5 +87,9 @@ for k, segment in enumerate(stress_block_segments):
     yp = [j[1] for j in segment]
     
     ax2.plot(xp, yp, c=colors[k])
+    
+    label='s_'+str(k)
+    
+    ax2.text((xp[0]+xp[1])/2,(yp[0]+yp[1])/2,label)
 
 plt.show()   

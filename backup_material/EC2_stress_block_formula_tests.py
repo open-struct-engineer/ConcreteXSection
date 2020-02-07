@@ -7,8 +7,8 @@ Created on Fri Feb 07 11:05:28 2020
 
 import math
 
-A = 20              # X1
-B = 20              # X2
+A = 10              # X1
+B = 10              # X2
 F = 5000*0.85       # Fcd
 D = 5.303           # Y1 = Y,na
 E = 10.7132857      # Y2 = Y coordinate that corresponds to ec2

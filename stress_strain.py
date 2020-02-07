@@ -34,6 +34,32 @@ from __future__ import division
 import math
 import matplotlib.pyplot as plt
 
+def stress_strain_pca(fprimec, ultimate_strain, concrete_modulus, strain):
+    '''
+    PCA Stress-Strain Relationship
+    formula presented in the PCA notes to ACI 318-05
+    '''
+    
+    e = strain
+    Ec = concrete_modulus
+    eu = ultimate_strain
+    fc = fprimec
+    
+    eo = (2*0.85*fc)/(Ec)
+    
+    if e <= 0:
+        stress = 0
+    
+    elif 0<=e and e<=eo:
+        stress = 0.85*fc*((2*(e/eo))-((e/eo)*(e/eo)))
+    
+    elif e<=eu:
+        stress = 0.85*fc
+    else:
+        stress = 0
+    
+    return stress
+    
 def stress_strain_desayi_krishnan(fprimec, ultimate_strain, k, strain):
     '''
     method for a parabolic stress-strain relationship for concrete in compression
@@ -47,7 +73,10 @@ def stress_strain_desayi_krishnan(fprimec, ultimate_strain, k, strain):
     '''
     if strain <=0:
         return 0
-
+    
+    elif strain > ultimate_strain:
+        return 0
+        
     else:
         fo = fprimec
 
@@ -65,7 +94,7 @@ def stress_strain_desayi_krishnan(fprimec, ultimate_strain, k, strain):
 
         f = (E*strain) / (1+math.pow(strain/eo,2))
 
-        return f
+        return f*0.85
 
 def stress_strain_collins_et_all(fprimec, ultimate_strain, strain):
     '''
@@ -75,7 +104,9 @@ def stress_strain_collins_et_all(fprimec, ultimate_strain, strain):
     '''
     if strain <=0:
         return 0
-
+    elif strain > ultimate_strain:
+        return 0
+        
     else:
         k = 0.67 + (fprimec / 9000.0) # for PSI units
         n = 0.8 + (fprimec / 2500.0) # for PSI units
@@ -90,7 +121,7 @@ def stress_strain_collins_et_all(fprimec, ultimate_strain, strain):
         else:
             f = ((e) * (n / (n-1+math.pow(e,n*k)))) * fprimec
 
-        return f
+        return f*0.85
 
 def stress_strain_whitney(fprimec, ultimate_strain, strain):
     '''
@@ -107,8 +138,11 @@ def stress_strain_whitney(fprimec, ultimate_strain, strain):
     if strain <= (ultimate_strain - (ultimate_strain*beta1)):
         return [0, beta1]
 
-    else:
+    elif strain <= ultimate_strain:
         return [0.85*fprimec, beta1]
+        
+    else:
+        return [0, beta1]
 
 def stress_strain_steel(fy, yield_strain, Es, strain):
     '''

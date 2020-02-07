@@ -10,12 +10,14 @@ import math
 A = 10              # X1
 B = 10              # X2
 F = 5000*0.85       # Fcd
-D = 5.303           # Y1 = Y,na
+D = 5.303           # Y1 = Y,na  
 E = 10.7132857      # Y2 = Y coordinate that corresponds to ec2
 K = 0.0035/0.002    # eu/ec2
 N = 2.0             # n from table 3.1
 C = 9.468           # NA Depth = Y,max - Y,na
 Y = 5.303           # Y,na = actual Y-coordinate of neutral Axis
+
+# Note flip A and B and D and E when checking a segment with descending y coordinates
 
 # Bounds of integration for P,Mx, and My are from Y,na to Y,ec2 only
 # Once in the constant stress region use the integral formulations for

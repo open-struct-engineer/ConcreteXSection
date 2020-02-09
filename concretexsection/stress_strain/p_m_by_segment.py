@@ -1,3 +1,5 @@
+import math
+
 
 def constant_stress_block(segments, stress):
     """
@@ -11,7 +13,7 @@ def constant_stress_block(segments, stress):
                 each segment should be of the form [[x1,y1],[x2,y2]]
                 each x,y should be a float
                 example input:
-                [[[x11,y11][x21,y21]],...,[[x1i,y1i],[x2i,y2i]]]
+                [[[x11,y11],[x21,y21]],...,[[x1i,y1i],[x2i,y2i]]]
 
     stress: float
             constant stress value for region
@@ -46,14 +48,6 @@ def constant_stress_block(segments, stress):
         x2 = s[1][0]
         y2 = s[1][1]
 
-        if y1>y2:
-            x1 = s[1][0]
-            y1 = s[1][1]
-            x2 = s[0][0]
-            y2 = s[0][1]
-        else:
-            pass
-
         axial = -1*0.5*f*(x1+x2)*(y1-y2)
         P += axial
 
@@ -83,7 +77,7 @@ def linear_stress_block(segments, q1, q1_y, q2, q2_y):
                 each x,y should be a float. y1 or y2 should exactly match
                 q1_y or q2_y.
                 example input:
-                [[[x11,y11][x21,y21]],...,[[x1i,y1i],[x2i,y2i]]]
+                [[[x11,y11],[x21,y21]],...,[[x1i,y1i],[x2i,y2i]]]
 
     q1: float
         stress value 1 for region, usually the start stress
@@ -111,7 +105,7 @@ def linear_stress_block(segments, q1, q1_y, q2, q2_y):
     details: list of floats
             list of P,Mx,My values per segment
     """
-    f = stress
+
     P = 0
     Mx = 0
     My = 0
@@ -132,10 +126,6 @@ def linear_stress_block(segments, q1, q1_y, q2, q2_y):
         else:
             qs = q2
             qe = q1
-            x1 = s[1][0]
-            y1 = s[1][1]
-            x2 = s[0][0]
-            y2 = s[0][1]
 
         axial = (1/6.0)*(y2-y1)*((qs*((2*x1)+x2))+(qe*(x1+(2*x2))))
         P += axial
@@ -179,7 +169,7 @@ def ec2_parabolic_stress_block(segments, fcd, n, eu, ec2, c, yna):
                 each x,y should be a float. y1 or y2 should exactly match
                 the y-coordinte associated with ec2 or the neutral axis y,na.
                 example input:
-                [[[x11,y11][x21,y21]],...,[[x1i,y1i],[x2i,y2i]]]
+                [[[x11,y11],[x21,y21]],...,[[x1i,y1i],[x2i,y2i]]]
 
     fcd: float
             design peak stress see EN 1992.1.1.2004
@@ -336,18 +326,9 @@ def ec2_parabolic_stress_block(segments, fcd, n, eu, ec2, c, yna):
     for s in segments:
         A = s[0][0] # X1
         B = s[1][0] # X2
-        D = s[0][1] # Y1 = Y,na
-        E = s[1][1] # Y2 = Y coordinate that corresponds to ec2
+        D = s[0][1] # Y1 = Y,na or Y,ec2
+        E = s[1][1] # Y2 = Y coordinate that corresponds to ec2 or Y,na
 
-        # If y1 > y2 then on a decending segment so switch x1,y1
-        # to match direction of integration
-        if D > E:
-            A = s[1][0] # X1
-            B = s[0][0] # X2
-            D = s[1][1] # Y1 = Y coordinate that corresponds to ec2
-            E = s[0][1] # Y2 = Y,na
-        else:
-            pass
 
         axial = []
         for t in range(0,2):
@@ -510,16 +491,6 @@ def pca_parabolic_stress_block(segments, fc, eu, Ec, c, yna):
         D = s[0][1] # Y1 = Y,na
         E = s[1][1] # Y2 = Y coordinate that corresponds to ec2
 
-        # If y1 > y2 then on a decending segment so switch x1,y1
-        # to match direction of integration
-        if D > E:
-            A = s[1][0] # X1
-            B = s[0][0] # X2
-            D = s[1][1] # Y1 = Y coordinate that corresponds to ec2
-            E = s[0][1] # Y2 = Y,na
-        else:
-            pass
-
         axial = ((17.0*(D - E)*F*K
                     *(B
                         * (D*D*K + 3*E*E*K + 2*D*(-2 + E*K - 2*K*Y) - 8*E*(1 + K*Y) + 6*Y*(2 + K*Y))
@@ -555,10 +526,19 @@ def pca_parabolic_stress_block(segments, fc, eu, Ec, c, yna):
                     )/1200.0)
 
         Mx += momentx
-        
+
         details.append([axial,momentx,momenty])
 
     x = My/P
     y = Mx/P
 
     return P,Mx,My,[x,y],details
+
+# --- Tests ----
+
+xy = [[[10,6.5],[10,15]],[[10,15],[-10,15]],[[-10,15],[-10,6.5]]]
+
+fcd = 0.85*5000
+
+P,Mx,My,center,details = constant_stress_block(xy, fcd)
+

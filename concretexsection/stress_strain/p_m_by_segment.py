@@ -489,3 +489,76 @@ def ec2_parabolic_stress_block(segments, fcd, n, eu, ec2, c, yna):
     y = Mx/P
 
     return P,Mx,My,[x,y],details
+
+def pca_parabolic_stress_block(segments, fc, eu, Ec, c, yna):
+
+    P = 0
+    Mx = 0
+    My = 0
+    x = 0
+    y = 0
+    details = []
+
+    eo = (2*0.85*fc)/Ec
+    K = eu/(c*eo)
+    F = fc
+    Y = yna
+
+    for s in segments:
+        A = s[0][0] # X1
+        B = s[1][0] # X2
+        D = s[0][1] # Y1 = Y,na
+        E = s[1][1] # Y2 = Y coordinate that corresponds to ec2
+
+        # If y1 > y2 then on a decending segment so switch x1,y1
+        # to match direction of integration
+        if D > E:
+            A = s[1][0] # X1
+            B = s[0][0] # X2
+            D = s[1][1] # Y1 = Y coordinate that corresponds to ec2
+            E = s[0][1] # Y2 = Y,na
+        else:
+            pass
+
+        axial = ((17.0*(D - E)*F*K
+                    *(B
+                        * (D*D*K + 3*E*E*K + 2*D*(-2 + E*K - 2*K*Y) - 8*E*(1 + K*Y) + 6*Y*(2 + K*Y))
+                        + A*(3*D*D*K + E*E*K
+                            + 2*D*(-4 + E*K - 4*K*Y) - 4*E*(1 + K*Y) + 6*Y*(2 + K*Y)
+                            )
+                        )
+                    )/240.0)
+
+        P+=axial
+
+        momenty = ((17*(D - E)*F*K
+                    * (
+                        B*B*(D*D*K + 6*E*E*K + D*(-5 + 3*E*K - 5*K*Y) - 15*E*(1 + K*Y) + 10*Y*(2 + K*Y))
+                        + A*B*(3*D*D*K + 3*E*E*K + 2*D*(-5 + 2*E*K - 5*K*Y) - 10*E*(1 + K*Y) + 10*Y*(2 + K*Y))
+                        + A*A*(6*D*D*K + E*E*K + 3*D*(-5 + E*K - 5*K*Y) - 5*E*(1 + K*Y) + 10*Y*(2 + K*Y))
+                        )
+                    )/1200.0)
+
+        My += momenty
+
+        momentx = ((17*(D - E)*F*K
+                    * (B
+                    * (3*D*D*D*K + 2*D*D*(-5 + 3*E*K - 5*K*Y)
+                        + D*(9*E*E*K - 20*E*(1 + K*Y) + 10*Y*(2 + K*Y))
+                        + 2*E*(6*E*E*K - 15*E*(1 + K*Y) + 10*Y*(2 + K*Y))
+                        )
+                        + A*(12*D*D*D*K + D*D*(9*E*K - 30*(1 + K*Y))
+                            + E*(3*E*E*K - 10*E*(1 + K*Y) + 10*Y*(2 + K*Y))
+                            + D*(6*E*E*K - 20*E*(1 + K*Y) + 20*Y*(2 + K*Y))
+                            )
+                        )
+                    )/1200.0)
+
+        Mx += momentx
+        
+        details.append([axial,momentx,momenty])
+
+    x = My/P
+    y = Mx/P
+
+    return P,Mx,My,[x,y],details

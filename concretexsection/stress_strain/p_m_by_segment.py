@@ -536,9 +536,26 @@ def pca_parabolic_stress_block(segments, fc, eu, Ec, c, yna):
 
 # --- Tests ----
 
+# Whitney Stress Block Test
 xy = [[[10,6.5],[10,15]],[[10,15],[-10,15]],[[-10,15],[-10,6.5]]]
 
 fcd = 0.85*5000
 
 P,Mx,My,center,details = constant_stress_block(xy, fcd)
 
+# Linear Stress 0 to 1000
+xyL = [[[10,6.5],[10,15]],[[10,15],[-10,15]],[[-10,15],[-10,6.5]]]
+
+Pl,MxL,MyL,centerL,detailsL = linear_stress_block(xyL,0,6.5,1000,15)
+
+# EC2 parabolic from y=5 to y=6.5 and then constant above
+xyEC2 = [[[10,5],[10,6.5]],[[-10,6.5],[-10,5]]]
+
+Pec2,MxEC2,MyEC2,centerEC2,detailsEC2 = ec2_parabolic_stress_block(xyEC2,fcd,2,0.0035,0.002,10,5)
+
+# PCA parabolid from y=5 to y=6.5
+xyPCA = [[[10,5],[10,6.5]],[[-10,6.5],[-10,5]]]
+
+Ec = 57000*math.sqrt(5000)
+
+Ppca,MxPCA,MyPCA,centerPCA,detailsPCA = pca_parabolic_stress_block(xyPCA,5000,0.003,Ec,10,5)

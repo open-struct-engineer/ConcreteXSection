@@ -34,6 +34,27 @@ from __future__ import division
 import math
 import matplotlib.pyplot as plt
 
+def stress_strain_ec2(fcd, ec2, eu, n, strain):
+    '''
+    EN 1992.1.1.2004 parabolic stress block as defined by equations 3.17 and 3.18
+    '''
+
+    e = strain
+
+    if e<0:
+        stress = 0
+
+    elif 0<=e and e<=ec2:
+        stress = fcd*(1-math.pow((1-(e/ec2)),n))
+
+    elif ec2<e and e<=eu:
+        stress = fcd
+
+    else:
+        stress=0
+
+    return stress
+  
 def stress_strain_pca(fprimec, ultimate_strain, concrete_modulus, strain):
     '''
     PCA Stress-Strain Relationship

@@ -157,8 +157,8 @@ def linear_stress_block(segments, q1, q1_y, q2, q2_y):
 def ec2_parabolic_stress_block(segments, fcd, n, eu, ec2, c, yna):
     """
     A function to calculate P,Mx, and My by line
-    integral along given line segments for a linearly
-    varing stress distribution
+    integral along given line segments for the parabolic region
+    of the EC2 stress block as defined in EN 1992.1.1.2004 equation 3.17
 
     Parameters
     ----------

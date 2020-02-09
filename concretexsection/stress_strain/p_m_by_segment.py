@@ -46,6 +46,14 @@ def constant_stress_block(segments, stress):
         x2 = s[1][0]
         y2 = s[1][1]
 
+        if y1>y2:
+            x1 = s[1][0]
+            y1 = s[1][1]
+            x2 = s[0][0]
+            y2 = s[0][1]
+        else:
+            pass
+
         axial = -1*0.5*f*(x1+x2)*(y1-y2)
         P += axial
 
@@ -124,6 +132,10 @@ def linear_stress_block(segments, q1, q1_y, q2, q2_y):
         else:
             qs = q2
             qe = q1
+            x1 = s[1][0]
+            y1 = s[1][1]
+            x2 = s[0][0]
+            y2 = s[0][1]
 
         axial = (1/6.0)*(y2-y1)*((qs*((2*x1)+x2))+(qe*(x1+(2*x2))))
         P += axial
@@ -334,6 +346,8 @@ def ec2_parabolic_stress_block(segments, fcd, n, eu, ec2, c, yna):
             B = s[0][0] # X2
             D = s[1][1] # Y1 = Y coordinate that corresponds to ec2
             E = s[0][1] # Y2 = Y,na
+        else:
+            pass
 
         axial = []
         for t in range(0,2):

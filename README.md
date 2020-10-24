@@ -14,4 +14,4 @@ Concrete Compression Stress Block Formulations:
   - [x] verified
 - [x] PCA Parabolic+Linear Stress Block
   - [x] verified - see backup material verified against 3 point Gauss Integration
-- [ ] EC2 Parabolis + Linear Stress Block - **Parametric Formula derived needs verification**
+- [ ] EC2 Parabolic + Linear Stress Block - **Parametric Formula derived needs verification**

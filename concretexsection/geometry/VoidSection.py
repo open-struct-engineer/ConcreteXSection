@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 
 class VoidSection:
 
-    def __init__(self, x, y, E=1, Fy=1):
+    def __init__(self, x, y,  material, units="Imperial/US"):
         '''
         A section defined by (x,y) vertices
 
@@ -54,8 +54,8 @@ class VoidSection:
         n = property multiplier
         '''
 
-        self.E = E
-        self.Fy = Fy
+        self.material = material
+        self.units = units
 
         # check if a closed polygon is formed from the coordinates
         # if not add another x and y coordinate equal to the firts
@@ -68,7 +68,7 @@ class VoidSection:
             x.append(x[0])
             y.append(y[0])
 
-            self.warnings = self.warnings + '**User Verify** Shape was not closed, program attempted to close it.\p'
+            self.warnings = self.warnings + '**User Verify** Shape was not closed, program attempted to close it.\n'
 
         # check the signed area of the coordinates, should be positive
         # for a solid shape. If not reverse the coordinate order
@@ -113,25 +113,25 @@ class VoidSection:
             # properties about the global x and y axis
 
             self.cx = sum([(x[i]+x[i+1])*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(6*self.area)
-            self.cx = self.cx*n
+            self.cx = self.cx
             self.output.append(self.cx)
             self.output_strings.append('Cx')
             self.cy = sum([(y[i]+y[i+1])*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(6*self.area)
-            self.cy = self.cy*n
+            self.cy = self.cy
             self.output.append(self.cy)
             self.output_strings.append('Cy')
             self.output.append('---')
             self.output_strings.append('Global Axis:')
             self.Ix = sum([((y[i]*y[i])+(y[i]*y[i+1])+(y[i+1]*y[i+1]))*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(12.0)
-            self.Ix = self.Ix*n
+            self.Ix = self.Ix
             self.output.append(self.Ix)
             self.output_strings.append('Ix')
             self.Iy = sum([((x[i]*x[i])+(x[i]*x[i+1])+(x[i+1]*x[i+1]))*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(12.0)
-            self.Iy = self.Iy*n
+            self.Iy = self.Iy
             self.output.append(self.Iy)
             self.output_strings.append('Iy')
             self.Ixy = sum([((x[i]*y[i+1])+(2*x[i]*y[i])+(2*x[i+1]*y[i+1])+(x[i+1]*y[i]))*(x[i]*y[i+1]-x[i+1]*y[i]) for i in range(len(x[:-1]))])/(24.0)
-            self.Ixy = self.Ixy*n
+            self.Ixy = self.Ixy
             self.output.append(self.Ixy)
             self.output_strings.append('Ixy')
             self.Jz = self.Ix + self.Iy
@@ -234,10 +234,15 @@ class VoidSection:
             self.output_strings.append('Theta2,v')
 
     def calc_s_at_vertices(self):
+        '''
+
+        calculate the first moment of area at each vertex
+
+        '''
         sx = []
         sy = []
 
-        for y in shape.y:
+        for y in self.y:
             if y == 0:
                 y=0.00000000000001
             else:
@@ -245,7 +250,7 @@ class VoidSection:
 
             sx.append(self.Ixx / abs(y - self.cy))
 
-        for x in shape.x:
+        for x in self.x:
             if x == 0:
                 x=0.00000000000001
             else:
@@ -272,13 +277,34 @@ class VoidSection:
 
             return [Ix,Iy,Ixy]
 
-    def transformed_vertices(self, xo, yo, angle):
+    def transformed_vertices_degrees(self, xo, yo, angle):
         '''
         given an angle in degrees
         and coordinate to translate about
         return the transformed values of the shape vertices
         '''
         theta = math.radians(angle)
+
+        x_t = [(x-xo)*math.cos(theta)+(y-yo)*math.sin(theta) for x,y in zip(self.x, self.y)]
+        y_t = [-1.0*(x-xo)*math.sin(theta)+(y-yo)*math.cos(theta) for x,y in zip(self.x, self.y)]
+
+        x_t = [i+xo for i in x_t]
+        y_t = [j+yo for j in y_t]
+
+        self.x = x_t
+        self.y = y_t
+
+        self.calc_props()
+
+        return [x_t, y_t]
+    
+    def transformed_vertices_radians(self, xo, yo, angle):
+        '''
+        given an angle in radians
+        and coordinate to translate about
+        return the transformed values of the shape vertices
+        '''
+        theta = angle
 
         x_t = [(x-xo)*math.cos(theta)+(y-yo)*math.sin(theta) for x,y in zip(self.x, self.y)]
         y_t = [-1.0*(x-xo)*math.sin(theta)+(y-yo)*math.cos(theta) for x,y in zip(self.x, self.y)]
@@ -308,36 +334,49 @@ class VoidSection:
 
         return [x_t, y_t]
 
-    def transformed_properties(self, x, y, angle):
+    def convert_metric(self):
         '''
-        given a new global x,y coordinate for a new
-        set of x, y axis and the axis angle. Return full set of transformed properties
-        at the new axis
+        Assuming the original inputs were Imperial/US units
+        convert the vertices to metric, mm and recompute
+        the section properties
 
-        input angle as degrees
         '''
-        if self.area == 0:
-            return [0,0,0,0,0,0,0]
 
+        'Check if already in metric'
+        if self.units == "Metric":
+            pass
         else:
-            Ix, Iy, Ixy = self.parallel_axis_theorem(x,y)
+            'Convert vertices from in to mm, 1:25.4'
+            self.x = [i*25.4 for i in self.x]
+            self.y = [j*25.4 for j in self.y]
 
-            two_theta = 2*math.radians(angle)
-            # I on principle Axis
+            'recalc geometric properties'
+            self.calc_props()
+    
+    def convert_imperial(self):
+        '''
+        Assuming the original inputs were Metric units
+        convert the vertices to Imperial/US, inches and 
+        recompute the section properties.
 
-            temp = (Ix+Iy)/2.0
-            temp2 = (Ix-Iy)/2.0
+        '''
 
-            Iu = temp + temp2*math.cos(two_theta) - Ixy*math.sin(two_theta)
-            Iv = temp - temp2*math.cos(two_theta) + Ixy*math.sin(two_theta)
-            Iuv = temp2*math.sin(two_theta) + Ixy*math.cos(two_theta)
+        'Check if already in Imperial/US'
+        if self.units == "Imperial/US":
+            pass
+        else:
+            'Convert vertices from mm to in, 25.4:1'
+            self.x = [i/25.4 for i in self.x]
+            self.y = [j/25.4 for j in self.y]
 
-            Jw = Iu + Iv
+            'recalc geometric properties'
+            self.calc_props()
+    
+    def define_segments(self):
+        '''
+        return ordered coordinate pairs defining the line segments
+        of each side of the section.
+        '''
+        self.segments = [[[self.x[i[0]],self.y[j[0]]],[self.x[i[0]+1],self.y[j[0]+1]]] for i,j in zip(enumerate(self.x[1:]),enumerate(self.y[1:]))]
 
-            ru = math.sqrt(Iu/self.area)
-            rv = math.sqrt(Iv/self.area)
-            rw = math.sqrt(Jw/self.area)
-
-            trans_coords = self.transformed_vertices(angle)
-
-            return [Iu,Iv,Iuv,Jw,ru,rv,rw,trans_coords]
+        return self.segments

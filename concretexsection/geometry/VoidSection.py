@@ -26,7 +26,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import division
 import math
-import matplotlib.pyplot as plt
 
 class VoidSection:
 
@@ -102,104 +101,104 @@ class VoidSection:
             x = self.x
             y = self.y
 
-            self.output = []
-            self.output_strings = []
+            self.log = []
+            self.log_strings = []
 
             self.area = sum([(x[i]*y[i+1])-(x[i+1]*y[i]) for i in range(len(x[:-1]))])/2.0
 
-            self.output.append(self.area)
-            self.output_strings.append('Area')
+            self.log.append(self.area)
+            self.log_strings.append('Area')
 
             # properties about the global x and y axis
 
             self.cx = sum([(x[i]+x[i+1])*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(6*self.area)
             self.cx = self.cx
-            self.output.append(self.cx)
-            self.output_strings.append('Cx')
+            self.log.append(self.cx)
+            self.log_strings.append('Cx')
             self.cy = sum([(y[i]+y[i+1])*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(6*self.area)
             self.cy = self.cy
-            self.output.append(self.cy)
-            self.output_strings.append('Cy')
-            self.output.append('---')
-            self.output_strings.append('Global Axis:')
+            self.log.append(self.cy)
+            self.log_strings.append('Cy')
+            self.log.append('---')
+            self.log_strings.append('Global Axis:')
             self.Ix = sum([((y[i]*y[i])+(y[i]*y[i+1])+(y[i+1]*y[i+1]))*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(12.0)
             self.Ix = self.Ix
-            self.output.append(self.Ix)
-            self.output_strings.append('Ix')
+            self.log.append(self.Ix)
+            self.log_strings.append('Ix')
             self.Iy = sum([((x[i]*x[i])+(x[i]*x[i+1])+(x[i+1]*x[i+1]))*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(12.0)
             self.Iy = self.Iy
-            self.output.append(self.Iy)
-            self.output_strings.append('Iy')
+            self.log.append(self.Iy)
+            self.log_strings.append('Iy')
             self.Ixy = sum([((x[i]*y[i+1])+(2*x[i]*y[i])+(2*x[i+1]*y[i+1])+(x[i+1]*y[i]))*(x[i]*y[i+1]-x[i+1]*y[i]) for i in range(len(x[:-1]))])/(24.0)
             self.Ixy = self.Ixy
-            self.output.append(self.Ixy)
-            self.output_strings.append('Ixy')
+            self.log.append(self.Ixy)
+            self.log_strings.append('Ixy')
             self.Jz = self.Ix + self.Iy
-            self.output.append(self.Jz)
-            self.output_strings.append('Jz')
+            self.log.append(self.Jz)
+            self.log_strings.append('Jz')
             self.sx_top = self.Ix / abs(max(y) - self.cy)
-            self.output.append(self.sx_top)
-            self.output_strings.append('Sx,top')
+            self.log.append(self.sx_top)
+            self.log_strings.append('Sx,top')
             self.sx_bottom = self.Ix / abs(min(y) - self.cy)
-            self.output.append(self.sx_bottom)
-            self.output_strings.append('Sx,botom')
+            self.log.append(self.sx_bottom)
+            self.log_strings.append('Sx,botom')
             self.sy_right = self.Iy / abs(max(x) - self.cx)
-            self.output.append(self.sy_right)
-            self.output_strings.append('Sy,right')
+            self.log.append(self.sy_right)
+            self.log_strings.append('Sy,right')
             self.sy_left = self.Iy / abs(min(x) - self.cx)
-            self.output.append(self.sy_left)
-            self.output_strings.append('Sy,left')
+            self.log.append(self.sy_left)
+            self.log_strings.append('Sy,left')
 
             self.rx = math.sqrt(self.Ix/self.area)
-            self.output.append(self.rx)
-            self.output_strings.append('rx')
+            self.log.append(self.rx)
+            self.log_strings.append('rx')
             self.ry = math.sqrt(self.Iy/self.area)
-            self.output.append(self.ry)
-            self.output_strings.append('ry')
+            self.log.append(self.ry)
+            self.log_strings.append('ry')
             self.rz = math.sqrt(self.Jz/self.area)
-            self.output.append(self.rz)
-            self.output_strings.append('rz')
+            self.log.append(self.rz)
+            self.log_strings.append('rz')
 
             # properties about the cross section centroidal x and y axis
             # parallel axis theorem Ix = Ixx + A*d^2
             # therefore to go from the global axis to the local
             # Ixx = Ix - A*d^2
-            self.output.append('--')
-            self.output_strings.append('Shape Centroidal Axis:')
+            self.log.append('--')
+            self.log_strings.append('Shape Centroidal Axis:')
             self.Ixx = self.Ix - (self.area*self.cy*self.cy)
-            self.output.append(self.Ixx)
-            self.output_strings.append('Ixx')
+            self.log.append(self.Ixx)
+            self.log_strings.append('Ixx')
             self.Iyy = self.Iy - (self.area*self.cx*self.cx)
-            self.output.append(self.Iyy)
-            self.output_strings.append('Iyy')
+            self.log.append(self.Iyy)
+            self.log_strings.append('Iyy')
             self.Ixxyy = self.Ixy - (self.area*self.cx*self.cy)
-            self.output.append(self.Ixxyy)
-            self.output_strings.append('Ixxyy')
+            self.log.append(self.Ixxyy)
+            self.log_strings.append('Ixxyy')
             self.Jzz = self.Ixx + self.Iyy
-            self.output.append(self.Jzz)
-            self.output_strings.append('Jzz')
+            self.log.append(self.Jzz)
+            self.log_strings.append('Jzz')
             self.sxx_top = self.Ixx / abs(max(y) - self.cy)
-            self.output.append(self.sxx_top)
-            self.output_strings.append('Sxx,top')
+            self.log.append(self.sxx_top)
+            self.log_strings.append('Sxx,top')
             self.sxx_bottom = self.Ixx / abs(min(y) - self.cy)
-            self.output.append(self.sxx_bottom)
-            self.output_strings.append('Sxx,bottom')
+            self.log.append(self.sxx_bottom)
+            self.log_strings.append('Sxx,bottom')
             self.syy_right = self.Iyy / abs(max(x) - self.cx)
-            self.output.append(self.syy_right)
-            self.output_strings.append('Syy,right')
+            self.log.append(self.syy_right)
+            self.log_strings.append('Syy,right')
             self.syy_left = self.Iyy / abs(min(x) - self.cx)
-            self.output.append(self.syy_left)
-            self.output_strings.append('Syy,left')
+            self.log.append(self.syy_left)
+            self.log_strings.append('Syy,left')
 
             self.rxx = math.sqrt(self.Ixx/self.area)
-            self.output.append(self.rxx)
-            self.output_strings.append('rxx')
+            self.log.append(self.rxx)
+            self.log_strings.append('rxx')
             self.ryy = math.sqrt(self.Iyy/self.area)
-            self.output.append(self.ryy)
-            self.output_strings.append('ryy')
+            self.log.append(self.ryy)
+            self.log_strings.append('ryy')
             self.rzz = math.sqrt(self.Jzz/self.area)
-            self.output.append(self.rzz)
-            self.output_strings.append('rzz')
+            self.log.append(self.rzz)
+            self.log_strings.append('rzz')
 
             # Cross section principle Axis
 
@@ -209,17 +208,17 @@ class VoidSection:
             I1 = temp + math.sqrt((temp2*temp2)+(self.Ixxyy*self.Ixxyy))
             I2 = temp - math.sqrt((temp2*temp2)+(self.Ixxyy*self.Ixxyy))
 
-            self.output.append('--')
-            self.output_strings.append('Shape Principal Axis:')
+            self.log.append('--')
+            self.log_strings.append('Shape Principal Axis:')
             self.Iuu = temp + temp2*math.cos(two_theta) - self.Ixxyy*math.sin(two_theta)
-            self.output.append(self.Iuu)
-            self.output_strings.append('Iuu')
+            self.log.append(self.Iuu)
+            self.log_strings.append('Iuu')
             self.Ivv = temp - temp2*math.cos(two_theta) + self.Ixxyy*math.sin(two_theta)
-            self.output.append(self.Ivv)
-            self.output_strings.append('Ivv')
+            self.log.append(self.Ivv)
+            self.log_strings.append('Ivv')
             self.Iuuvv = temp2*math.sin(two_theta) + self.Ixxyy*math.cos(two_theta)
-            self.output.append(self.Iuuvv)
-            self.output_strings.append('Iuuvv')
+            self.log.append(self.Iuuvv)
+            self.log_strings.append('Iuuvv')
 
             if I1-0.000001 <= self.Iuu <= I1+0.000001:
                 self.theta1 = math.degrees(two_theta/2.0)
@@ -228,10 +227,10 @@ class VoidSection:
                 self.theta2 = math.degrees(two_theta/2.0)
                 self.theta1 = self.theta2 - 90.0
 
-            self.output.append(self.theta1)
-            self.output_strings.append('Theta1,u')
-            self.output.append(self.theta2)
-            self.output_strings.append('Theta2,v')
+            self.log.append(self.theta1)
+            self.log_strings.append('Theta1,u')
+            self.log.append(self.theta2)
+            self.log_strings.append('Theta2,v')
 
     def calc_s_at_vertices(self):
         '''

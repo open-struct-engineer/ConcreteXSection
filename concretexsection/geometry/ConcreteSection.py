@@ -65,7 +65,7 @@ class ConcreteSection:
             x.append(x[0])
             y.append(y[0])
 
-            self.warnings = self.warnings + '**User Verify** Shape was not closed, program attempted to close it.\p'
+            self.warnings = self.warnings + '**User Verify** Shape was not closed, program attempted to close it.\n'
 
         # check the signed area of the coordinates, should be positive
         # for a solid shape. If not reverse the coordinate order
@@ -115,25 +115,25 @@ class ConcreteSection:
             # properties about the global x and y axis
 
             self.cx = sum([(x[i]+x[i+1])*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(6*self.area)
-            self.cx = self.cx*n
+            self.cx = self.cx
             self.log.append(self.cx)
             self.log_strings.append('Cx')
             self.cy = sum([(y[i]+y[i+1])*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(6*self.area)
-            self.cy = self.cy*n
+            self.cy = self.cy
             self.log.append(self.cy)
             self.log_strings.append('Cy')
             self.log.append('---')
             self.log_strings.append('Global Axis:')
             self.Ix = sum([((y[i]*y[i])+(y[i]*y[i+1])+(y[i+1]*y[i+1]))*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(12.0)
-            self.Ix = self.Ix*n
+            self.Ix = self.Ix
             self.log.append(self.Ix)
             self.log_strings.append('Ix')
             self.Iy = sum([((x[i]*x[i])+(x[i]*x[i+1])+(x[i+1]*x[i+1]))*((x[i]*y[i+1])-(x[i+1]*y[i])) for i in range(len(x[:-1]))])/(12.0)
-            self.Iy = self.Iy*n
+            self.Iy = self.Iy
             self.log.append(self.Iy)
             self.log_strings.append('Iy')
             self.Ixy = sum([((x[i]*y[i+1])+(2*x[i]*y[i])+(2*x[i+1]*y[i+1])+(x[i+1]*y[i]))*(x[i]*y[i+1]-x[i+1]*y[i]) for i in range(len(x[:-1]))])/(24.0)
-            self.Ixy = self.Ixy*n
+            self.Ixy = self.Ixy
             self.log.append(self.Ixy)
             self.log_strings.append('Ixy')
             self.Jz = self.Ix + self.Iy
@@ -244,7 +244,7 @@ class ConcreteSection:
         sx = []
         sy = []
 
-        for y in shape.y:
+        for y in self.y:
             if y == 0:
                 y=0.00000000000001
             else:
@@ -252,7 +252,7 @@ class ConcreteSection:
 
             sx.append(self.Ixx / abs(y - self.cy))
 
-        for x in shape.x:
+        for x in self.x:
             if x == 0:
                 x=0.00000000000001
             else:
@@ -374,7 +374,7 @@ class ConcreteSection:
             'recalc geometric properties'
             self.calc_props()
     
-    def segments(self):
+    def define_segments(self):
         '''
         return ordered coordinate pairs defining the line segments
         of each side of the section.

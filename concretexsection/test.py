@@ -34,7 +34,7 @@ Section = ConcreteSection.ConcreteSection(x, y, material)
 
 segments = Section.define_segments()
 
-alpha = 2.0737
+alpha = 2.0853
 x_t = 6
 y_t = 12
 
@@ -42,12 +42,14 @@ xp,yp = Section.transformed_vertices_radians(x_t, y_t, alpha)
 
 rt_segments = [[[xp[i[0]],yp[j[0]]],[xp[i[0]+1],yp[j[0]+1]]] for i,j in zip(enumerate(xp[1:]),enumerate(yp[1:]))]
 
-y_whitney = 6.852
+y_whitney = 6.931244
 f_c1 = 4.25
 f_c2 = f_c1
 p = []
 mx = []
 my = []
+
+# Below will be basis for Whitney Block Function on concrete or void section
 
 for edge in rt_segments:
     

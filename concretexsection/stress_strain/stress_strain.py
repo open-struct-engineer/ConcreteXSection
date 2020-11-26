@@ -216,38 +216,3 @@ def strain_at_depth(eu,neutral_axis_depth,depth_of_interest):
 
     return e
 
-def plastic_center(bars_x=[1], bars_y=[1], fy=60000, As=[0.31], fc=3000, conc_area=1, conc_centroid=[0,0]):
-    '''
-    given the ulitmate strain, f'c (28-day) strength
-    return a the plastic centroid for the three stress-strain equations
-    of the concrete
-
-    accounting for the bar area subtracting from the concrete area by (fy/fc - 1)
-    similar approach to transformed sections using n = Es/Ec
-    '''
-
-    fc = fc_input
-
-    cc = fc*conc_area
-    cc_mx = cc*conc_centroid[1]
-    cc_my = cc*conc_centroid[0]
-
-    cb = [i * (fy-fc) for i in As]
-
-    C = cc + sum(cb)
-
-    cb_mx = [(cb[i] * bars_y[i]) for i in range(len(bars_x))]
-    cb_my = [(cb[i] * bars_x[i]) for i in range(len(bars_x))]
-
-    C_mx = cc_mx+sum(cb_mx)
-    C_my = cc_my+sum(cb_my)
-
-    yp = C_mx/C
-    xp = C_my/C
-
-    pc = [xp,yp]
-
-    print cb_mx
-    print cb_my
-    print pc
-    return pc,[fc,cc,cc_mx,cc_my,cb,cb_mx,cb_my,C,C_mx,C_my]

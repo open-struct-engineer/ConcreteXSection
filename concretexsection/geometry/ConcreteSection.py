@@ -237,9 +237,7 @@ class ConcreteSection:
 
     def calc_s_at_vertices(self):
         '''
-
         calculate the first moment of area at each vertex
-
         '''
         sx = []
         sy = []
@@ -279,7 +277,7 @@ class ConcreteSection:
 
             return [Ix,Iy,Ixy]
 
-    def transformed_vertices_degrees(self, xo, yo, angle):
+    def transformed_vertices_degrees(self, xo, yo, angle, commit=0):
         '''
         given an angle in degrees
         and coordinate to translate about
@@ -287,20 +285,21 @@ class ConcreteSection:
         '''
         theta = math.radians(angle)
 
-        x_t = [(x-xo)*math.cos(theta)+(y-yo)*math.sin(theta) for x,y in zip(self.x, self.y)]
-        y_t = [-1.0*(x-xo)*math.sin(theta)+(y-yo)*math.cos(theta) for x,y in zip(self.x, self.y)]
+        x_tr = [(x-xo)*math.cos(theta)+(y-yo)*math.sin(theta) for x,y in zip(self.x, self.y)]
+        y_tr = [-1.0*(x-xo)*math.sin(theta)+(y-yo)*math.cos(theta) for x,y in zip(self.x, self.y)]
 
-        x_t = [i+xo for i in x_t]
-        y_t = [j+yo for j in y_t]
+        # Commit transformation to Section
+        if commit == 1:
+            self.x = x_tr
+            self.y = y_tr
 
-        self.x = x_t
-        self.y = y_t
+            self.calc_props()
+        else:
+            pass
 
-        self.calc_props()
-
-        return [x_t, y_t]
+        return [x_tr, y_tr]
     
-    def transformed_vertices_radians(self, xo, yo, angle):
+    def transformed_vertices_radians(self, xo, yo, angle, commit=0):
         '''
         given an angle in radians
         and coordinate to translate about
@@ -308,31 +307,37 @@ class ConcreteSection:
         '''
         theta = angle
 
-        x_t = [(x-xo)*math.cos(theta)+(y-yo)*math.sin(theta) for x,y in zip(self.x, self.y)]
-        y_t = [-1.0*(x-xo)*math.sin(theta)+(y-yo)*math.cos(theta) for x,y in zip(self.x, self.y)]
+        x_tr = [(x-xo)*math.cos(theta)+(y-yo)*math.sin(theta) for x,y in zip(self.x, self.y)]
+        y_tr = [-1.0*(x-xo)*math.sin(theta)+(y-yo)*math.cos(theta) for x,y in zip(self.x, self.y)]
 
-        x_t = [i+xo for i in x_t]
-        y_t = [j+yo for j in y_t]
+        # Commit transformation to Section
+        if commit == 1:
+            self.x = x_tr
+            self.y = y_tr
 
-        self.x = x_t
-        self.y = y_t
+            self.calc_props()
+        else:
+            pass
 
-        self.calc_props()
+        return [x_tr, y_tr]
 
-        return [x_t, y_t]
-
-    def translate_vertices(self, xo, yo):
+    def translate_vertices(self, xo, yo, commit=0):
         '''
         give an x and y translation
-        shift the shape vertices by the x and y amount
+        shift or return the shifted 
+        shape vertices by the x and y amount
         '''
         x_t = [x+xo for x in self.x]
         y_t = [y+yo for y in self.y]
 
-        self.x = x_t
-        self.y = y_t
+        # Commit the translation to the shape
+        if commit == 1:
+            self.x = x_t
+            self.y = y_t
 
-        self.calc_props()
+            self.calc_props()
+        else:
+            pass
 
         return [x_t, y_t]
 

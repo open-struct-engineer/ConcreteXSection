@@ -32,33 +32,164 @@ y = [0,0,16,16,24,24,16,16,0]
 material = 5000
 Section = ConcreteSection.ConcreteSection(x, y, material)
 
-print(Section.area)
-
 segments = Section.define_segments()
 
 alpha = 2.0737
 x_t = 6
 y_t = 12
 
+xp,yp = Section.transformed_vertices_radians(x_t, y_t, alpha)
 
-Section.transformed_vertices_radians(x_t, y_t, alpha)
+rt_segments = [[[xp[i[0]],yp[j[0]]],[xp[i[0]+1],yp[j[0]+1]]] for i,j in zip(enumerate(xp[1:]),enumerate(yp[1:]))]
 
-rotated_segment = Section.define_segments()
+y_whitney = 6.852
+f_c1 = 4.25
+f_c2 = f_c1
+p = []
+mx = []
+my = []
 
-ASTM_IMPERIAL_REBAR = {
-                        3:[0.375,0.11,0.376],
-                        4:[0.5,0.2,0.668],
-                        5:[0.625,0.31,1.043],
-                        6:[0.75,0.44,1.502],
-                        7:[0.875,0.60,2.044],
-                        8:[1,0.79,2.67],
-                        9:[1.128,1,3.4],
-                        10:[1.27,1.27,4.303],
-                        11:[1.41,1.56,5.313],
-                        14:[1.693,2.25,7.65],
-                        18:[2.257,4.0,13.6]
-                    }
+for edge in rt_segments:
+    
+    #Check if y greater than both ends of segment
+    if y_whitney >= edge[0][1] and y_whitney >= edge[1][1]:
+        pass
+    
+    # Case of a horizontal edge
+    elif edge[0][1] == edge[1][1]:
+        
+        x1 = edge[0][0]
+        y1 = edge[0][1]
+        x2 = edge[1][0]
+        y2 = edge[1][1]
+        
+        pe = (1/6.0)*(y2-y1)*((f_c1*((2*x1)+x2))+(f_c2*(x1+(2*x2))))
+        mxe = ((1/12.0)
+                *(y2-y1)
+                    *(
+                        (f_c1*x1*((3*y1)+y2))
+                        + (f_c1*x2*(y1+y2))
+                        + (f_c2*x1*(y1+y2))
+                        + (f_c2*x2*(y1+(3*y2)))
+                    )
+                )
+        mye = ((1/24.0)
+               *(y1-y2)
+               *(
+                    (x1*x1*((3*f_c1)+f_c2))
+                    + (2*x1*x2*(f_c1+f_c2))
+                    + (x2*x2*(f_c1+(3*f_c2)))
+                )
+               )
+        
+        p.append(pe)
+        mx.append(mxe)
+        my.append(mye)
+                       
+    # Case of entire edge above stress block boundary
+    elif y_whitney <= edge[0][1] and y_whitney <= edge[1][1]:
+        x1 = edge[0][0]
+        y1 = edge[0][1]
+        x2 = edge[1][0]
+        y2 = edge[1][1]
+        
+        pe = (1/6.0)*(y2-y1)*((f_c1*((2*x1)+x2))+(f_c2*(x1+(2*x2))))
+        mxe = ((1/12.0)
+                *(y2-y1)
+                    *(
+                        (f_c1*x1*((3*y1)+y2))
+                        + (f_c1*x2*(y1+y2))
+                        + (f_c2*x1*(y1+y2))
+                        + (f_c2*x2*(y1+(3*y2)))
+                    )
+                )
+        mye = ((1/24.0)
+               *(y1-y2)
+               *(
+                    (x1*x1*((3*f_c1)+f_c2))
+                    + (2*x1*x2*(f_c1+f_c2))
+                    + (x2*x2*(f_c1+(3*f_c2)))
+                )
+               )
+        
+        p.append(pe)
+        mx.append(mxe)
+        my.append(mye)
+        
+    else:
+        
+        # Compute Parametric t for stress block boundary
+        # note strain only varies in y so only need to 
+        # solve for t using y parametric formula
+        
+        t = (y_whitney - edge[0][1])/(edge[1][1]-edge[0][1])
+        
+        xt = edge[0][0] + (t*(edge[1][0]-edge[0][0]))
+        yt = edge[0][1] + (t*(edge[1][1]-edge[0][1]))
+        
+        if edge[0][1] <= y_whitney:
+            x1 = xt
+            y1 = yt
+            x2 = edge[1][0]
+            y2 = edge[1][1]
+            
+            pe = (1/6.0)*(y2-y1)*((f_c1*((2*x1)+x2))+(f_c2*(x1+(2*x2))))
+            mxe = ((1/12.0)
+                    *(y2-y1)
+                        *(
+                            (f_c1*x1*((3*y1)+y2))
+                            + (f_c1*x2*(y1+y2))
+                            + (f_c2*x1*(y1+y2))
+                            + (f_c2*x2*(y1+(3*y2)))
+                        )
+                    )
+            mye = ((1/24.0)
+                   *(y1-y2)
+                   *(
+                        (x1*x1*((3*f_c1)+f_c2))
+                        + (2*x1*x2*(f_c1+f_c2))
+                        + (x2*x2*(f_c1+(3*f_c2)))
+                    )
+                   )
+            
+            p.append(pe)
+            mx.append(mxe)
+            my.append(mye) 
+        
+        else:
+            x1 = edge[0][0]
+            y1 = edge[0][1]
+            x2 = xt
+            y2 = yt
+            
+            pe = (1/6.0)*(y2-y1)*((f_c1*((2*x1)+x2))+(f_c2*(x1+(2*x2))))
+            mxe = ((1/12.0)
+                    *(y2-y1)
+                        *(
+                            (f_c1*x1*((3*y1)+y2))
+                            + (f_c1*x2*(y1+y2))
+                            + (f_c2*x1*(y1+y2))
+                            + (f_c2*x2*(y1+(3*y2)))
+                        )
+                    )
+            mye = ((1/24.0)
+                   *(y1-y2)
+                   *(
+                        (x1*x1*((3*f_c1)+f_c2))
+                        + (2*x1*x2*(f_c1+f_c2))
+                        + (x2*x2*(f_c1+(3*f_c2)))
+                    )
+                   )
+            
+            p.append(pe)
+            mx.append(mxe)
+            my.append(mye)
 
-size = 4
+P = sum(p)
+Mx = sum(mx)
+My = sum(my)   
 
-print(ASTM_IMPERIAL_REBAR[size][1])
+print(P)
+print(Mx)
+print(My)
+

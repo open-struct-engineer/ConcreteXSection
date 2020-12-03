@@ -15,6 +15,8 @@ Concrete Compression Stress Block Formulations for Sections defined by straight 
 - [x] PCA Parabolic+Linear Stress Block
   - [x] verified - see backup material verified against 3 point Gauss Integration
 - [ ] Eurocode 2 Parabolic + Linear Stress Block (eq 3.17) - **Parametric Formula derived needs verification**
+- [ ] Eurocode 2 Bi-Linear - Section 3.1.7 (2)
+- [ ] User Defined Piecewise Linear
 
 Concrete Compression Stress Block Formulations for Circular Sections:
 - [x] Whitney Block
@@ -22,3 +24,10 @@ Concrete Compression Stress Block Formulations for Circular Sections:
 - [x] PCA Parabolic + Linear Stress Block
   - [x] verified - verification via 100 discrete trapezoid slices through parabolic region
 - [ ] Eurocode 2 Parabolic + Linear Stress Block (eq 3.17) - **Researching, When n=2 similar to PCA when n<2 numeric integration may be the best option**
+- [ ] Eurocde 2 Bi-Linear - Section 3.1.7 (2)
+- [ ] User Defined Piecewise Linear
+
+Steel Stress-Strain Relationship:
+- [x] Elastic Constant - Stress = Fy beyond yield point
+- [ ] Elastic + Linear Plastic - Stress in plastic region increases linearly
+- [ ] User Defined Piecewise linear

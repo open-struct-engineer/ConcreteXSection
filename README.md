@@ -21,4 +21,4 @@ Concrete Compression Stress Block Formulations for Circular Sections:
   - [x] verified - Segment area * 0.85 * F'c
 - [x] PCA Parabolic + Linear Stress Block
   - [x] verified - verification via 100 discrete trapezoid slices through parabolic region
-- [ ] Eurocode 2 Parabolic + Linear Stress Block (eq 3.17) - **Researching, When n=2 similar to PCA when n<2 numeric integration may be required**
+- [ ] Eurocode 2 Parabolic + Linear Stress Block (eq 3.17) - **Researching, When n=2 similar to PCA when n<2 numeric integration may be the best option**

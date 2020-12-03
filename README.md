@@ -6,12 +6,19 @@ ToDo:
 - [x] Programming Languages to Support - ** Python and VBA **
 - [x] National Building Codes to Support
  - ACI 318
- - EC2
+ - EN 1992-1-1 December 2004
  - CSA
 
-Concrete Compression Stress Block Formulations:
+Concrete Compression Stress Block Formulations for Sections defined by straight lines:
 - [x] Whitney Block
-  - [x] verified
+  - [x] verified - Area * 0.85 * F'c
 - [x] PCA Parabolic+Linear Stress Block
   - [x] verified - see backup material verified against 3 point Gauss Integration
-- [ ] EC2 Parabolic + Linear Stress Block - **Parametric Formula derived needs verification**
+- [ ] Eurocode 2 Parabolic + Linear Stress Block (eq 3.17) - **Parametric Formula derived needs verification**
+
+Concrete Compression Stress Block Formulations for Circular Sections:
+- [x] Whitney Block
+ - [x] verified - Segment area * 0.85 * F'c
+- [x] PCA Parabolic + Linear Stress Block
+ - [x] verified - verification via 100 discrete trapezoid slices through parabolic region
+- [ ] Eurocode 2 Parabolic + Linear Stress Block (eq 3.17) - **Researching, When n=2 similar to PCA when n<2 numeric integration may be required**

@@ -31,3 +31,6 @@ Steel Stress-Strain Relationship:
 - [x] Elastic Constant - Stress = Fy beyond yield point
 - [ ] Elastic + Linear Plastic - Stress in plastic region increases linearly
 - [ ] User Defined Piecewise linear
+
+Checks not done by anyone that probably should be done:
+- [ ] strain in steel < rupture strain

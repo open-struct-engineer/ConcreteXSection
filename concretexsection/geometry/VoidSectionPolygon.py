@@ -27,7 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from __future__ import division
 import math
 
-class VoidSection:
+class VoidSectionPolygon:
 
     def __init__(self, x, y,  material, units="Imperial/US"):
         '''
@@ -55,6 +55,7 @@ class VoidSection:
 
         self.material = material
         self.units = units
+        self.shape='polygon'
 
         # check if a closed polygon is formed from the coordinates
         # if not add another x and y coordinate equal to the firts
@@ -297,7 +298,7 @@ class VoidSection:
             pass
 
         return [x_tr, y_tr]
-    
+
     def transformed_vertices_radians(self, xo, yo, angle, commit=0):
         '''
         given an angle in radians
@@ -323,7 +324,7 @@ class VoidSection:
     def translate_vertices(self, xo, yo, commit=0):
         '''
         give an x and y translation
-        shift or return the shifted 
+        shift or return the shifted
         shape vertices by the x and y amount
         '''
         x_t = [x+xo for x in self.x]
@@ -358,11 +359,11 @@ class VoidSection:
 
             'recalc geometric properties'
             self.calc_props()
-    
+
     def convert_imperial(self):
         '''
         Assuming the original inputs were Metric units
-        convert the vertices to Imperial/US, inches and 
+        convert the vertices to Imperial/US, inches and
         recompute the section properties.
 
         '''
@@ -377,7 +378,7 @@ class VoidSection:
 
             'recalc geometric properties'
             self.calc_props()
-    
+
     def define_segments(self):
         '''
         return ordered coordinate pairs defining the line segments
